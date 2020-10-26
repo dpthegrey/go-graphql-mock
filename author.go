@@ -1,6 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 )
 
@@ -53,3 +57,24 @@ var authorInputType *graphql.InputObject = graphql.NewInputObject(graphql.InputO
 		},
 	},
 })
+
+func RegisterEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Content-type", "application/json")
+	var author Author
+	json.NewDecoder(request.Body).Decode(&author)
+	author.Id = uuid.Must(uuid.NewRandom()).String()
+	authors = append(authors, author)
+	json.NewEncoder(response).Encode(authors)
+}
+
+func LoginEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Content-type", "application/json")
+	var data Author
+	json.NewDecoder(request.Body).Decode(&data)
+	for _, author := range authors {
+		if author.Username == data.Username {
+			json.NewEncoder(response).Encode(author)
+		}
+	}
+	json.NewEncoder(response).Encode(Author{})
+}

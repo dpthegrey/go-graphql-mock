@@ -172,6 +172,8 @@ func main() {
 	schema, _ := graphql.NewSchema(graphql.SchemaConfig{
 		Query: rootQuery,
 	})
+	router.HandleFunc("/register", RegisterEndpoint).Methods("POST")
+	router.HandleFunc("login", LoginEndpoint).Methods("POST")
 	router.HandleFunc("/graphql", func(response http.ResponseWriter, request *http.Request) {
 		response.Header().Set("content-type", "application/json")
 		var payload GraphQLPayload
